@@ -40,17 +40,20 @@ public class JwtTokenProvider {
 		
 	}
 	
-	public String createToken(String userName, TipoUsuario tipo_usuario) {
+	public String createToken(String userName, String tipo_usuario) {
 		Claims claims = Jwts.claims().setSubject(userName);
 		claims.put("roles", tipo_usuario);
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + this.validityInMilliseconds);
-		return Jwts.builder()
+		System.out.println(tipo_usuario);
+		String token=Jwts.builder()
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(validity)
 				.signWith(SignatureAlgorithm.HS256, this.secretKey)
-				.compact();	
+				.compact();
+		System.out.println(tipo_usuario);
+		return 	token;
 	}
 	
 	public String getUsername(String token) {

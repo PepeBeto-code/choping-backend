@@ -15,10 +15,11 @@ import lombok.Data;
 public class TipoUsuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	int id;
+	@Column(name="id")
+	private int id;
 	
 	@Column(name="nombre")
-	private String nombre_tipo_usuario;
+	private String nombre;
 	
 	@Column(name="descripcion")
 	private String descripcion;

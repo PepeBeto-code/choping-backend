@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -19,11 +20,15 @@ import lombok.Data;
 public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@Column(name="id")
+	private int id_user;
 	
-	@OneToOne(optional=true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name="id_tipo_usuario", insertable=false, updatable=false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="tipo_usuario")
 	private TipoUsuario tipo_usuario;
+	
+	@Column(name="nombre_usuario")
+	private String nombre;
 	
 	@Column(name="password")
 	private String password;

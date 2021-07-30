@@ -53,7 +53,7 @@ public class UsuarioServiceImp implements UserDetailsService, UsuarioService{
 		Usuario usuario = repouser.findByEmail(email);
 		// Si existe el usuario
 		if(usuario != null) {
-			List<GrantedAuthority> authorities = getUserAuthority(usuario.getTipo_usuario().getNombre_tipo_usuario());
+			List<GrantedAuthority> authorities = getUserAuthority(usuario.getTipo_usuario().getNombre());
 			return buildUserForAuthentication(usuario, authorities);
 		}else {
 			throw new UsernameNotFoundException("Nombre de usuariuo no encontrado");

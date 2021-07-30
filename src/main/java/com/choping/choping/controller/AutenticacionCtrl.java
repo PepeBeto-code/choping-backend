@@ -3,8 +3,10 @@ package com.choping.choping.controller;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.naming.AuthenticationException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +28,11 @@ import com.choping.choping.repository.UsuarioRepository;
 import com.choping.choping.service.TipoUsuarioImpl;
 import com.choping.choping.service.UsuarioServiceImp;
 
+@RestController
+@RequestMapping("/api/autenticacion")
 public class AutenticacionCtrl {
 	@Autowired
-	AuthenticationManager authenticationmanager;
+	AuthenticationManager authenticationManager;
 	
     @Autowired
     JwtTokenProvider jwtTokenProvider;
@@ -42,35 +46,37 @@ public class AutenticacionCtrl {
 	@Autowired
 	TipoUsuarioImpl tUSrv;
 	
+	@SuppressWarnings("rawtypes")
 	@PostMapping("/login")
-	public ResponseEntity<Map<Object,Object>> login(@RequestBody AutenticacionBody datos) {
+	public ResponseEntity login(@RequestBody AutenticacionBody datos) {
 		try {
-			String email = datos.getEmail();
-			Usuario usuario = this.users.findByEmail(email);
-			
-			
-			authenticationmanager.authenticate(new UsernamePasswordAuthenticationToken(email, datos.getPassword()));
-            String token = jwtTokenProvider.createToken(email, usuario.getTipo_usuario());
-            
-            Map<Object, Object> respuesta = new HashMap<>();            
-            respuesta.put("username", usuario.getEmail());
-            respuesta.put("token", token);
-            return ok(respuesta);
-				
-		}catch(Exception e) {
-			Map<Object, Object> respuesta = new HashMap<>();   
-			respuesta.put("Mensaje", "Error en proceso de autenticacion");
-			respuesta.put("Exception", e.getMessage());
-			return new ResponseEntity<Map<Object, Object>>(respuesta, HttpStatus.I_AM_A_TEAPOT);
+			UsernamePasswordAuthenticationToken authT = 
+					new UsernamePasswordAuthenticationToken(
+							datos.getEmail(), 
+							datos.getPassword());
+			org.springframework.security.core.Authentication auth = authenticationManager.authenticate(authT);
+			List<?> rolesL = (List) auth.getAuthorities();
+			String tipo_usuario = 
+					((GrantedAuthority) rolesL.get(0)).getAuthority();
+			System.out.println(tipo_usuario);
+			String token = jwtTokenProvider.createToken(auth.getName(), 
+					tipo_usuario);
+			Map<Object, Object> modelo = new HashMap<>();
+            modelo.put("token", token);   
+			return ok(modelo);
+		}catch (Exception e) {
+			System.out.println(e);
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Credenciales inválidas. Verifica la información");
 		}
 		
 		
 	}
 	
 	@SuppressWarnings("rawtypes")
-    @PostMapping("/registro/{id}")
-    public ResponseEntity register(@Valid @RequestBody Usuario user, 
-    		@PathVariable int id) {
+    @PostMapping("/registro")
+    public ResponseEntity register(@Valid @RequestBody Usuario user) {
     	System.out.println(user);
         return usuarios.crearUsuario(user);
     }
