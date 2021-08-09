@@ -42,7 +42,7 @@ public class SpringBootSecurityConfiguration extends WebSecurityConfigurerAdapte
 		http.httpBasic().disable().csrf().disable().sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 		.authorizeRequests() 
-			.antMatchers("/api/autenticacion/**")
+			.antMatchers("/api/autenticacion/**","/usuarios/**","/productos/**")
 				.permitAll()
 			.antMatchers( ).permitAll()
 			.regexMatchers( ).authenticated()
