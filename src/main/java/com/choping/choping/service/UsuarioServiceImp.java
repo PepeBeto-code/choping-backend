@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.choping.choping.modelo.Usuario;
+import com.choping.choping.modelo.UsuarioDO;
+import com.choping.choping.modelo.UsuarioDto;
 import com.choping.choping.repository.UsuarioRepository;
 
 @Service
@@ -27,6 +29,12 @@ public class UsuarioServiceImp implements UserDetailsService, UsuarioService{
 	
 	@Autowired
 	private PasswordEncoder bCryptPasswordEncoder;
+	
+	@Override
+	public  UsuarioDO getUsuario(int id) {
+		return this.repouser.obtenerDo(id);
+	}
+
 	
 	@Override 
 	public ResponseEntity<Object> crearUsuario(Usuario usuario){
@@ -69,6 +77,16 @@ public class UsuarioServiceImp implements UserDetailsService, UsuarioService{
 		
 		return grantedAuthorities;
 				
+	}
+	
+	@Override
+	public UsuarioDto obtenerPorEmail(String email) {
+		return this.repouser.findByEmailDto(email);
+	}
+	
+	@Override
+	public UsuarioDto obtenerPorNombre(String nombre) {
+		return this.repouser.findByNombreDto(nombre);
 	}
 
 

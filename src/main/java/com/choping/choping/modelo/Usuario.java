@@ -1,5 +1,7 @@
 package com.choping.choping.modelo;
 
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,7 +24,7 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
-	private int id_user;
+	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="tipo_usuario")
@@ -38,6 +41,9 @@ public class Usuario {
 	
 	@Column(name="telefono")
 	private String telefono;
+	
+	@OneToMany(mappedBy = "usuario")
+	private Set<Producto> usuario;
 
 
 }
